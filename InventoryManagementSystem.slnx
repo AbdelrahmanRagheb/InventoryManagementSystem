@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="InventoryManagementSystem.API/InventoryManagementSystem.API.csproj" Id="a641d0c2-96c5-4770-81b6-09889244c8f7" />
+    <Project Path="InventoryManagementSystem.Application/InventoryManagementSystem.Application.csproj" Id="95eb871a-1ce7-415f-a540-28cac3950291" />
+    <Project Path="InventoryManagementSystem.Domain/InventoryManagementSystem.Domain.csproj" Id="070bc64d-ab06-426f-bfba-ed1b9aa0de62" />
+    <Project Path="InventoryManagementSystem.Infrastructure/InventoryManagementSystem.Infrastructure.csproj" Id="c163b8c6-7995-4cb6-8811-734de20ebd31" />
+  </Folder>
+</Solution>

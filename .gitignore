@@ -1,0 +1,27 @@
+## .NET build results
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vs/config/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+
+## Rider / VS Code
+.idea/
+.vscode/
+*.pidb
+*.userprefs
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Docs
+docs/
+
+## EF migrations are committed (not ignored)
