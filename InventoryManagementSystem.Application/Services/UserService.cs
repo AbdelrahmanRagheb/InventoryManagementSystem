@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class UserService
+public class UserService : IUserService
 {
     private readonly IUserRepository _repo;
     private readonly IPasswordHasher _hasher;

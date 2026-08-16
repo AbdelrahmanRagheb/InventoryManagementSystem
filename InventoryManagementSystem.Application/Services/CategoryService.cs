@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class CategoryService : BaseService<Category>
+public class CategoryService : BaseService<Category>, ICategoryService
 {
     private readonly ICategoryRepository _categoryRepo;
     public CategoryService(ICategoryRepository repo) : base(repo) => _categoryRepo = repo;

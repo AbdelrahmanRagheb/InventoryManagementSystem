@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class AuthService
+public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepo;
     private readonly IPasswordHasher _hasher;

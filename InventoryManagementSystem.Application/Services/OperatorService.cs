@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class OperatorService
+public class OperatorService : IOperatorService
 {
     private readonly IWarehouseOperatorRepository _repo;
     public OperatorService(IWarehouseOperatorRepository repo) => _repo = repo;

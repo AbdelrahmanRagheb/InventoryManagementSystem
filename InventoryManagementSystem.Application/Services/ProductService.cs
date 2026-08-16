@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class ProductService : BaseService<Product>
+public class ProductService : BaseService<Product>, IProductService
 {
     private readonly IProductRepository _productRepo;
     private readonly ICategoryRepository _categoryRepo;

@@ -1,8 +1,20 @@
+using System.ComponentModel.DataAnnotations;
+using InventoryManagementSystem.Domain.Enums;
+
 namespace InventoryManagementSystem.Application.DTOs.Inventory;
 
-public record CreateInventoryRequest(Guid ProductId, Guid WarehouseId, int Quantity, string Reason);
+public record CreateInventoryRequest(
+    [param: Required] Guid ProductId,
+    [param: Required] Guid WarehouseId,
+    [param: Range(0, int.MaxValue)] int Quantity,
+    [param: Required, StringLength(500)] string Reason);
 
-public record AdjustStockRequest(Guid ProductId, Guid WarehouseId, int QuantityChange, string Reason);
+public record AdjustStockRequest(
+    [param: Required] Guid ProductId,
+    [param: Required] Guid WarehouseId,
+    [param: Required] TransactionType Type,
+    [param: Range(1, int.MaxValue)] int QuantityChange,
+    [param: Required, StringLength(500)] string Reason);
 
 public record InventoryResponse(Guid Id, Guid ProductId, Guid WarehouseId, int Quantity, DateTime UpdatedAt);
 

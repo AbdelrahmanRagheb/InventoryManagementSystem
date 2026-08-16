@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class InventoryService
+public class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _invRepo;
     private readonly IInventoryTransactionRepository _txnRepo;
@@ -76,28 +76,35 @@ public class InventoryService
 
         if (request.QuantityChange <= 0) return (false, "Quantity change must be positive");
 
+        if (request.Type != TransactionType.Increase && request.Type != TransactionType.Decrease)
+            return (false, "Transaction type must be Increase or Decrease");
+
         if (string.IsNullOrWhiteSpace(request.Reason)) return (false, "Reason is required");
 
         var (isOperator, ownedWh) = await CheckOperatorWarehouse(changedByUserId);
         if (isOperator && inventory.WarehouseId != ownedWh)
             return (false, "Warehouse operator can only adjust their assigned warehouse");
 
-        if (inventory.Quantity - request.QuantityChange < 0) return (false, "Decrease would result in negative stock");
+        var newQuantity = request.Type == TransactionType.Increase
+            ? inventory.Quantity + request.QuantityChange
+            : inventory.Quantity - request.QuantityChange;
 
-        inventory.Quantity -= request.QuantityChange;
+        if (newQuantity < 0) return (false, "Decrease would result in negative stock");
+
+        var previousQuantity = inventory.Quantity;
+        inventory.Quantity = newQuantity;
         inventory.UpdatedAt = DateTime.UtcNow;
         await _invRepo.UpdateAsync(inventory);
 
-        var txnType = request.QuantityChange > 0 ? TransactionType.Increase : TransactionType.Decrease;
         var transaction = new InventoryTransaction
         {
             Id = Guid.NewGuid(),
             ProductId = request.ProductId,
             WarehouseId = request.WarehouseId,
-            Type = txnType,
-            QuantityChange = Math.Abs(request.QuantityChange),
-            PreviousQuantity = inventory.Quantity + request.QuantityChange,
-            NewQuantity = inventory.Quantity,
+            Type = request.Type,
+            QuantityChange = request.QuantityChange,
+            PreviousQuantity = previousQuantity,
+            NewQuantity = newQuantity,
             Reason = request.Reason,
             CreatedByUserId = changedByUserId,
             CreatedAt = DateTime.UtcNow

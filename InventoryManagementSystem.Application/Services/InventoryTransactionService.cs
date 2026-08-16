@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class InventoryTransactionService
+public class InventoryTransactionService : IInventoryTransactionService
 {
     private readonly IInventoryTransactionRepository _repo;
     public InventoryTransactionService(IInventoryTransactionRepository repo) => _repo = repo;

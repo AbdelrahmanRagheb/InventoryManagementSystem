@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace InventoryManagementSystem.Application.Services;
 
-public class WarehouseService : BaseService<Warehouse>
+public class WarehouseService : BaseService<Warehouse>, IWarehouseService
 {
     private readonly IWarehouseRepository _warehouseRepo;
     public WarehouseService(IWarehouseRepository repo) : base(repo) => _warehouseRepo = repo;
