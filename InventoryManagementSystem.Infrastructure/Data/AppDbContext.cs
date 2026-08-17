@@ -16,6 +16,9 @@ public class AppDbContext : DbContext
     public DbSet<InventoryTransaction> InventoryTransactions => Set<InventoryTransaction>();
     public DbSet<WarehouseOperator> WarehouseOperators => Set<WarehouseOperator>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<OrderHistory> OrderHistory => Set<OrderHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

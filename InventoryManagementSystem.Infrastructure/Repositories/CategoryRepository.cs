@@ -17,4 +17,10 @@ public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
         _context.Set<Category>().Update(entity);
         await _context.SaveChangesAsync();
     }
+
+    public async Task RemoveAsync(Category entity)
+    {
+        _context.Set<Category>().Remove(entity);
+        await _context.SaveChangesAsync();
+    }
 }

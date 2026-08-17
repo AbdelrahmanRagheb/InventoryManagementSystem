@@ -6,4 +6,5 @@ namespace InventoryManagementSystem.Application.Repositories;
 public interface IProductRepository : IRepository<Product>
 {
     Task UpdateAsync(Product entity);
+    Task<IReadOnlyList<Product>> GetByIdsAsync(IEnumerable<Guid> ids);
 }

@@ -21,13 +21,4 @@ public class AuthController : ControllerBase
         if (!success) return Unauthorized(new { error });
         return Ok(new LoginResponse(token!));
     }
-
-    [HttpPost("register")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
-    {
-        var (success, error) = await _authService.Register(request.Username, request.Email, request.Password, request.Role);
-        if (!success) return BadRequest(new { error });
-        return Ok();
-    }
 }

@@ -56,11 +56,29 @@ public class CategoriesController : ControllerBase
         return Ok(ToResponse(category));
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpPost("{id:guid}/deactivate")]
+    public async Task<IActionResult> DeactivateCategory(Guid id)
     {
-        await _categoryService.DeleteAsync(id);
-        return NoContent();
+        var category = await _categoryService.GetByIdAsync(id);
+        if (category == null) return NotFound(new { message = $"Category with id: {id} does not exist" });
+        await _categoryService.DeactivateAsync(id);
+        return Ok(ToResponse(category));
+    }
+
+    [HttpPost("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(Guid id)
+    {
+        var category = await _categoryService.ActivateAsync(id);
+        if (category == null) return NotFound(new { message = $"Category with id: {id} does not exist" });
+        return Ok(ToResponse(category));
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> HardDelete(Guid id)
+    {
+        var deleted = await _categoryService.HardDeleteAsync(id);
+        if (!deleted) return NotFound(new { message = $"Category with id: {id} does not exist" });
+        return Ok(new { message = $"Category with id: {id} is deleted successfully" });
     }
 
     private static CategoryResponse ToResponse(Category category) =>

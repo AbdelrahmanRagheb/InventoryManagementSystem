@@ -6,4 +6,5 @@ namespace InventoryManagementSystem.Application.Repositories;
 public interface ICategoryRepository : IRepository<Category>
 {
     Task UpdateAsync(Category entity);
+    Task RemoveAsync(Category entity);
 }

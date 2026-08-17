@@ -7,4 +7,5 @@ public class WarehouseOperator
     public Guid OperatorUserId { get; set; }
 
     public Warehouse Warehouse { get; set; } = null!;
+    public User Operator { get; set; } = null!;
 }

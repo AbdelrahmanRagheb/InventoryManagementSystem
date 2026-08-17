@@ -11,9 +11,26 @@ public class CategoryService : BaseService<Category>, ICategoryService
 
     public async Task UpdateAsync(Category category) { await _categoryRepo.UpdateAsync(category); }
 
-    public override async Task DeleteAsync(Guid id)
+    public async Task<Category?> ActivateAsync(Guid id)
+    {
+        var category = await _categoryRepo.GetByIdAsync(id);
+        if (category == null) return null;
+        category.IsActive = true;
+        await _categoryRepo.UpdateAsync(category);
+        return category;
+    }
+
+    public override async Task DeactivateAsync(Guid id)
     {
         var category = await _categoryRepo.GetByIdAsync(id);
         if (category != null) { category.IsActive = false; await _categoryRepo.UpdateAsync(category); }
+    }
+
+    public async Task<bool> HardDeleteAsync(Guid id)
+    {
+        var category = await _categoryRepo.GetByIdAsync(id);
+        if (category == null) return false;
+        await _categoryRepo.RemoveAsync(category);
+        return true;
     }
 }

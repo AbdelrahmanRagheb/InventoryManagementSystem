@@ -38,6 +38,7 @@ public class ProductsController : ControllerBase
             Id = Guid.NewGuid(),
             Name = request.Name,
             CategoryId = request.CategoryId,
+            Price = request.Price,
             IsActive = request.IsActive,
             CreatedAt = DateTime.UtcNow
         };
@@ -59,6 +60,7 @@ public class ProductsController : ControllerBase
         if (product == null) return NotFound();
         if (request.Name != null) product.Name = request.Name;
         if (request.CategoryId.HasValue) product.CategoryId = request.CategoryId.Value;
+        if (request.Price.HasValue) product.Price = request.Price.Value;
         if (request.IsActive.HasValue) product.IsActive = request.IsActive.Value;
         try
         {
@@ -71,13 +73,23 @@ public class ProductsController : ControllerBase
         return Ok(ToResponse(product));
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpPost("{id:guid}/deactivate")]
+    public async Task<IActionResult> DeactivateProduct(Guid id)
     {
-        await _productService.DeleteAsync(id);
-        return NoContent();
+        var product = await _productService.GetByIdAsync(id);
+        if (product == null) return NotFound(new { message = $"Product with id: {id} does not exist" });
+        await _productService.DeactivateAsync(id);
+        return Ok(ToResponse(product));
+    }
+
+    [HttpPost("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(Guid id)
+    {
+        var product = await _productService.ActivateAsync(id);
+        if (product == null) return NotFound(new { message = $"Product with id: {id} does not exist" });
+        return Ok(ToResponse(product));
     }
 
     private static ProductResponse ToResponse(Product product) =>
-        new(product.Id, product.Name, product.CategoryId, product.IsActive, product.CreatedAt);
+        new(product.Id, product.Name, product.CategoryId, product.Price, product.IsActive, product.CreatedAt);
 }

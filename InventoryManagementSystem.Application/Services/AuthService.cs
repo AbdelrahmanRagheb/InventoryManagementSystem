@@ -23,25 +23,4 @@ public class AuthService : IAuthService
         var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username, user.Role);
         return (true, token, null);
     }
-
-    public async Task<(bool Success, string? Error)> Register(string username, string email, string password, string role)
-    {
-        var existingUser = await _userRepo.GetByUsernameAsync(username);
-        if (existingUser != null) return (false, "Username already exists");
-        var existingEmail = await _userRepo.GetByEmailAsync(email);
-        if (existingEmail != null) return (false, "Email already exists");
-        var hashed = _hasher.Hash(password);
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Username = username,
-            Email = email,
-            PasswordHash = hashed,
-            Role = role,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        };
-        await _userRepo.AddAsync(user);
-        return (true, null);
-    }
 }

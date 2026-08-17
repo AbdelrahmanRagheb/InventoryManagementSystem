@@ -18,7 +18,7 @@ public class WarehouseOperatorConfiguration : IEntityTypeConfiguration<Warehouse
             .HasForeignKey(o => o.WarehouseId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<User>()
+        builder.HasOne(o => o.Operator)
             .WithMany()
             .HasForeignKey(o => o.OperatorUserId)
             .OnDelete(DeleteBehavior.Cascade);

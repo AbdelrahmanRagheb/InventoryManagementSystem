@@ -96,6 +96,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Role = "Manager",
                 PasswordHash = "100000.k19uFWjMCAzN+mGFdto86w==.z7SieNjkQ+HoYMlIfG815EZr7r54bCc/jF8FHWHc5Do=",
                 CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new User
+            {
+                Id = new Guid("40000000-0000-0000-0000-000000000007"),
+                Username = "sales1",
+                Email = "sales1@inventory.local",
+                DisplayName = "Sales Agent One",
+                Role = "SalesAgent",
+                PasswordHash = "100000.dxsBi574BJhxiOFR6stu7Q==.zY8XemzTza1R4uCnyBq2v+con1+G6srKZcCsxJfEiFg=",
+                CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
     }

@@ -5,5 +5,4 @@ namespace InventoryManagementSystem.Application.Authentication;
 public interface IAuthService
 {
     Task<(bool Success, string? Token, string? Error)> Login(string username, string password);
-    Task<(bool Success, string? Error)> Register(string username, string email, string password, string role);
 }

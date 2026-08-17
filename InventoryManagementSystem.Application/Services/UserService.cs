@@ -30,7 +30,7 @@ public class UserService : IUserService
         await _repo.UpdateAsync(user);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeactivateAsync(Guid id)
     {
         var user = await _repo.GetByIdAsync(id);
         if (user != null) { user.IsActive = false; await _repo.UpdateAsync(user); }

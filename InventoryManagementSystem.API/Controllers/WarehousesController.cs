@@ -56,11 +56,21 @@ public class WarehousesController : ControllerBase
         return Ok(ToResponse(warehouse));
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpPost("{id:guid}/deactivate")]
+    public async Task<IActionResult> DeactivateWarehouse(Guid id)
     {
-        await _warehouseService.DeleteAsync(id);
-        return NoContent();
+        var warehouse = await _warehouseService.GetByIdAsync(id);
+        if (warehouse == null) return NotFound(new { message = $"Warehouse with id: {id} does not exist" });
+        await _warehouseService.DeactivateAsync(id);
+        return Ok(ToResponse(warehouse));
+    }
+
+    [HttpPost("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(Guid id)
+    {
+        var warehouse = await _warehouseService.ActivateAsync(id);
+        if (warehouse == null) return NotFound(new { message = $"Warehouse with id: {id} does not exist" });
+        return Ok(ToResponse(warehouse));
     }
 
     private static WarehouseResponse ToResponse(Warehouse warehouse) =>

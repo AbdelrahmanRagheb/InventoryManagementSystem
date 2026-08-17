@@ -1,4 +1,5 @@
 using InventoryManagementSystem.Application.DTOs.Operators;
+using InventoryManagementSystem.Application.DTOs.Users;
 using InventoryManagementSystem.Application.Services;
 using InventoryManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,13 @@ public class OperatorsController : ControllerBase
     private readonly IOperatorService _operatorService;
 
     public OperatorsController(IOperatorService operatorService) => _operatorService = operatorService;
+
+    [HttpGet("/api/operators")]
+    public async Task<IActionResult> GetAll()
+    {
+        var operators = await _operatorService.GetAllAsync();
+        return Ok(operators.Select(ToResponse));
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetByWarehouse(Guid warehouseId)
@@ -39,7 +47,32 @@ public class OperatorsController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
-        return CreatedAtAction(nameof(GetByWarehouse), new { warehouseId }, ToResponse(assign));
+        var created = await _operatorService.GetByWarehouseAndUserAsync(assign.WarehouseId, assign.OperatorUserId);
+        return CreatedAtAction(nameof(GetByWarehouse), new { warehouseId }, ToResponse(created!));
+    }
+
+    [HttpPut("{userId:guid}")]
+    public async Task<IActionResult> Update(Guid warehouseId, Guid userId, [FromBody] UpdateOperatorRequest request)
+    {
+        var current = await _operatorService.GetByWarehouseAndUserAsync(warehouseId, userId);
+        if (current == null) return NotFound(new { message = "Assignment not found" });
+
+        var assign = new WarehouseOperator
+        {
+            Id = current.Id,
+            WarehouseId = request.WarehouseId ?? current.WarehouseId,
+            OperatorUserId = request.OperatorUserId ?? current.OperatorUserId
+        };
+        try
+        {
+            await _operatorService.UpdateAsync(assign);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        var updated = await _operatorService.GetByWarehouseAndUserAsync(assign.WarehouseId, assign.OperatorUserId);
+        return Ok(ToResponse(updated!));
     }
 
     [HttpDelete("{userId:guid}")]
@@ -50,5 +83,12 @@ public class OperatorsController : ControllerBase
     }
 
     private static OperatorResponse ToResponse(WarehouseOperator assign) =>
-        new(assign.Id, assign.WarehouseId, assign.OperatorUserId);
+        new(assign.Id, assign.WarehouseId, new UserResponse(
+            assign.Operator.Id,
+            assign.Operator.Username,
+            assign.Operator.Email,
+            assign.Operator.DisplayName,
+            assign.Operator.Role,
+            assign.Operator.IsActive,
+            assign.Operator.CreatedAt));
 }

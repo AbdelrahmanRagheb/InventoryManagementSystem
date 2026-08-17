@@ -12,5 +12,5 @@ public abstract class BaseService<TEntity> : IService<TEntity> where TEntity : c
     public virtual Task<IReadOnlyList<TEntity>> GetAllAsync() => _repo.GetAllAsync();
     public virtual Task<TEntity?> GetByIdAsync(Guid id) => _repo.GetByIdAsync(id);
     public virtual Task AddAsync(TEntity entity) => _repo.AddAsync(entity);
-    public abstract Task DeleteAsync(Guid id);
+    public abstract Task DeactivateAsync(Guid id);
 }

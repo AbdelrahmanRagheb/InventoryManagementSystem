@@ -4,6 +4,7 @@ using InventoryManagementSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260816234438_MakeProductCategoryIdNullable")]
+    partial class MakeProductCategoryIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -582,99 +585,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CancelledAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CustomerEmail")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.OrderHistory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ChangedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ChangedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChangedByUserId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderHistory");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.OrderItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("OrderId", "ProductId")
-                        .IsUnique();
-
-                    b.ToTable("OrderItems");
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -695,10 +605,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -712,8 +618,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "iPhone 15",
-                            Price = 799.99m
+                            Name = "iPhone 15"
                         },
                         new
                         {
@@ -721,8 +626,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Samsung 55 TV",
-                            Price = 649.99m
+                            Name = "Samsung 55 TV"
                         },
                         new
                         {
@@ -730,8 +634,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Dell XPS 13 Laptop",
-                            Price = 999.99m
+                            Name = "Dell XPS 13 Laptop"
                         },
                         new
                         {
@@ -739,8 +642,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Bluetooth Headphones",
-                            Price = 89.99m
+                            Name = "Bluetooth Headphones"
                         },
                         new
                         {
@@ -748,8 +650,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Smart Watch",
-                            Price = 199.99m
+                            Name = "Smart Watch"
                         },
                         new
                         {
@@ -757,8 +658,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000002"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Basmati Rice 5kg",
-                            Price = 12.99m
+                            Name = "Basmati Rice 5kg"
                         },
                         new
                         {
@@ -766,8 +666,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000002"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Canned Beans",
-                            Price = 2.49m
+                            Name = "Canned Beans"
                         },
                         new
                         {
@@ -775,8 +674,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000002"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Olive Oil",
-                            Price = 9.99m
+                            Name = "Olive Oil"
                         },
                         new
                         {
@@ -784,8 +682,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000002"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Fresh Bread",
-                            Price = 1.99m
+                            Name = "Fresh Bread"
                         },
                         new
                         {
@@ -793,8 +690,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000002"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Almonds",
-                            Price = 8.99m
+                            Name = "Almonds"
                         },
                         new
                         {
@@ -802,8 +698,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000003"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Office Chair",
-                            Price = 149.99m
+                            Name = "Office Chair"
                         },
                         new
                         {
@@ -811,8 +706,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000003"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Desk Lamp",
-                            Price = 39.99m
+                            Name = "Desk Lamp"
                         },
                         new
                         {
@@ -820,8 +714,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000003"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Notebook Set",
-                            Price = 5.99m
+                            Name = "Notebook Set"
                         },
                         new
                         {
@@ -829,8 +722,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000003"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Pen Set",
-                            Price = 3.99m
+                            Name = "Pen Set"
                         },
                         new
                         {
@@ -838,8 +730,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000003"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Stapler",
-                            Price = 7.99m
+                            Name = "Stapler"
                         },
                         new
                         {
@@ -847,8 +738,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "T-Shirt",
-                            Price = 15.99m
+                            Name = "T-Shirt"
                         },
                         new
                         {
@@ -856,8 +746,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Jeans",
-                            Price = 49.99m
+                            Name = "Jeans"
                         },
                         new
                         {
@@ -865,8 +754,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Jacket",
-                            Price = 89.99m
+                            Name = "Jacket"
                         },
                         new
                         {
@@ -874,8 +762,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Coffee Maker",
-                            Price = 79.99m
+                            Name = "Coffee Maker"
                         },
                         new
                         {
@@ -883,8 +770,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CategoryId = new Guid("10000000-0000-0000-0000-000000000001"),
                             CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Name = "Blender",
-                            Price = 59.99m
+                            Name = "Blender"
                         });
                 });
 
@@ -1000,17 +886,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             PasswordHash = "100000.k19uFWjMCAzN+mGFdto86w==.z7SieNjkQ+HoYMlIfG815EZr7r54bCc/jF8FHWHc5Do=",
                             Role = "Manager",
                             Username = "manager"
-                        },
-                        new
-                        {
-                            Id = new Guid("40000000-0000-0000-0000-000000000007"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            DisplayName = "Sales Agent One",
-                            Email = "sales1@inventory.local",
-                            IsActive = true,
-                            PasswordHash = "100000.dxsBi574BJhxiOFR6stu7Q==.zY8XemzTza1R4uCnyBq2v+con1+G6srKZcCsxJfEiFg=",
-                            Role = "SalesAgent",
-                            Username = "sales1"
                         });
                 });
 
@@ -1156,55 +1031,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Order", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.OrderHistory", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.User", "ChangedBy")
-                        .WithMany()
-                        .HasForeignKey("ChangedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Order", "Order")
-                        .WithMany("History")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChangedBy");
-
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.OrderItem", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Order", "Order")
-                        .WithMany("Items")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Product", b =>
                 {
                     b.HasOne("InventoryManagementSystem.Domain.Entities.Category", "Category")
@@ -1217,7 +1043,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.WarehouseOperator", b =>
                 {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.User", "Operator")
+                    b.HasOne("InventoryManagementSystem.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("OperatorUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1228,8 +1054,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Operator");
 
                     b.Navigation("Warehouse");
                 });
@@ -1242,13 +1066,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Inventory", b =>
                 {
                     b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Order", b =>
-                {
-                    b.Navigation("History");
-
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Product", b =>
