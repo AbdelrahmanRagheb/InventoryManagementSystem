@@ -1,3 +1,4 @@
+using InventoryManagementSystem.Application.Authorization;
 using InventoryManagementSystem.Application.DTOs.Orders;
 using InventoryManagementSystem.Application.Repositories;
 using InventoryManagementSystem.Domain.Entities;
@@ -15,7 +16,7 @@ public class OrderService : IOrderService
     private readonly IProductRepository _productRepo;
     private readonly IInventoryRepository _inventoryRepo;
     private readonly IInventoryTransactionRepository _transactionRepo;
-    private readonly IWarehouseOperatorRepository _warehouseOperatorRepo;
+    private readonly IAccessService _accessService;
     private readonly IUnitOfWork _unitOfWork;
 
     public OrderService(
@@ -23,14 +24,14 @@ public class OrderService : IOrderService
         IProductRepository productRepo,
         IInventoryRepository inventoryRepo,
         IInventoryTransactionRepository transactionRepo,
-        IWarehouseOperatorRepository warehouseOperatorRepo,
+        IAccessService accessService,
         IUnitOfWork unitOfWork)
     {
         _orderRepo = orderRepo;
         _productRepo = productRepo;
         _inventoryRepo = inventoryRepo;
         _transactionRepo = transactionRepo;
-        _warehouseOperatorRepo = warehouseOperatorRepo;
+        _accessService = accessService;
         _unitOfWork = unitOfWork;
     }
 
@@ -83,7 +84,8 @@ public class OrderService : IOrderService
         var order = await _orderRepo.GetByIdWithItemsAsync(orderId);
         if (order == null)
             return (false, $"Order with id: {orderId} does not exist", false);
-        if (order.CreatedByUserId != userId)
+        var updateRole = await _accessService.GetRoleNameAsync(userId);
+        if (order.CreatedByUserId != userId && updateRole != RoleDefaults.Admin)
             return (false, null, true);
         if (order.Status != OrderStatus.Pending)
             return (false, "Only pending orders can be updated", false);
@@ -93,6 +95,10 @@ public class OrderService : IOrderService
 
         if (request.Items != null && request.Items.Count > 0)
         {
+            if (!await _accessService.HasPermissionAsync(userId, PermissionCatalog.OrderItemAdd) ||
+                !await _accessService.HasPermissionAsync(userId, PermissionCatalog.OrderItemRemove))
+                return (false, null, true);
+
             var products = await _productRepo.GetByIdsAsync(request.Items.Select(i => i.ProductId).Distinct());
             var (items, error) = BuildItems(request.Items, products);
             if (error != null)
@@ -112,7 +118,8 @@ public class OrderService : IOrderService
         var order = await _orderRepo.GetByIdWithItemsAsync(orderId);
         if (order == null)
             return (false, $"Order with id: {orderId} does not exist", false);
-        if (order.CreatedByUserId != userId)
+        var cancelRole = await _accessService.GetRoleNameAsync(userId);
+        if (order.CreatedByUserId != userId && cancelRole != RoleDefaults.Admin)
             return (false, null, true);
         if (order.Status != OrderStatus.Pending)
             return (false, "Only pending orders can be cancelled", false);
@@ -130,7 +137,7 @@ public class OrderService : IOrderService
         return (true, null, false);
     }
 
-    public async Task<(bool Success, string? Error, bool Forbidden)> FulfillAsync(Guid orderId, Guid warehouseId, Guid operatorUserId)
+    public async Task<(bool Success, string? Error, bool Forbidden)> FulfillAsync(Guid orderId, FulfillOrderRequest request, Guid operatorUserId)
     {
         var order = await _orderRepo.GetByIdWithItemsAsync(orderId);
         if (order == null)
@@ -138,31 +145,56 @@ public class OrderService : IOrderService
         if (order.Status != OrderStatus.Pending)
             return (false, "Only pending orders can be fulfilled", false);
 
-        var assignments = await _warehouseOperatorRepo.GetByOperatorAsync(operatorUserId);
-        if (!assignments.Any(a => a.WarehouseId == warehouseId))
-            return (false, "Warehouse operator can only fulfill orders from their assigned warehouse", true);
+        var warehousesByItem = new Dictionary<Guid, Guid>();
+        foreach (var entry in request.Items)
+        {
+            if (warehousesByItem.ContainsKey(entry.OrderItemId))
+                return (false, $"Order item: {entry.OrderItemId} is assigned more than once", false);
+            warehousesByItem[entry.OrderItemId] = entry.WarehouseId;
+        }
+
+        foreach (var item in order.Items)
+        {
+            if (!warehousesByItem.ContainsKey(item.Id))
+                return (false, $"Warehouse not specified for order item: {item.Id}", false);
+        }
+
+        foreach (var itemId in warehousesByItem.Keys)
+        {
+            if (order.Items.All(i => i.Id != itemId))
+                return (false, $"Order item: {itemId} does not belong to this order", false);
+        }
+
+        foreach (var warehouseId in warehousesByItem.Values.Distinct())
+        {
+            if (!await _accessService.CanAsync(operatorUserId, PermissionCatalog.OrderComplete, warehouseId))
+                return (false, "You are only allowed to fulfill orders from warehouses you are assigned to complete", true);
+        }
 
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             foreach (var item in order.Items)
             {
+                var warehouseId = warehousesByItem[item.Id];
                 var inventory = await _inventoryRepo.GetByProductWarehouseAsync(item.ProductId, warehouseId);
                 if (inventory == null)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return (false, $"No inventory record for product: {item.ProductId} in this warehouse", false);
+                    return (false, $"No inventory record for product: {item.Product.Name} in this warehouse", false);
                 }
                 if (inventory.Quantity < item.Quantity)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return (false, $"Insufficient stock for product: {item.ProductId} in this warehouse", false);
+                    return (false, $"Insufficient stock for product: {item.Product.Name} in this warehouse", false);
                 }
 
                 var previous = inventory.Quantity;
                 inventory.Quantity = previous - item.Quantity;
                 inventory.UpdatedAt = DateTime.UtcNow;
                 await _inventoryRepo.UpdateAsync(inventory);
+
+                item.WarehouseId = warehouseId;
 
                 await _transactionRepo.AddAsync(new InventoryTransaction
                 {

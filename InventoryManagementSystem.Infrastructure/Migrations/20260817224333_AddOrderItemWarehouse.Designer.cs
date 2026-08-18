@@ -4,6 +4,7 @@ using InventoryManagementSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260817224333_AddOrderItemWarehouse")]
+    partial class AddOrderItemWarehouse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -680,242 +683,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Permission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Permissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000001"),
-                            Description = "Create new user accounts",
-                            Name = "User.Create"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000002"),
-                            Description = "Edit user profile fields",
-                            Name = "User.Edit"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000003"),
-                            Description = "Deactivate (disable) user accounts",
-                            Name = "User.Deactivate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000004"),
-                            Description = "Assign a role to a user (replaces their permissions with the role defaults)",
-                            Name = "User.AssignRole"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000005"),
-                            Description = "Grant and revoke user permissions",
-                            Name = "User.ManagePermissions"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000006"),
-                            Description = "Create products",
-                            Name = "Product.Create"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000007"),
-                            Description = "Edit products",
-                            Name = "Product.Edit"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000008"),
-                            Description = "View products",
-                            Name = "Product.View"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000009"),
-                            Description = "Deactivate products",
-                            Name = "Product.Deactivate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000010"),
-                            Description = "Activate products",
-                            Name = "Product.Activate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000011"),
-                            Description = "Create categories",
-                            Name = "Category.Create"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000012"),
-                            Description = "Edit categories",
-                            Name = "Category.Edit"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000013"),
-                            Description = "View categories",
-                            Name = "Category.View"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000014"),
-                            Description = "Deactivate categories",
-                            Name = "Category.Deactivate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000015"),
-                            Description = "Activate categories",
-                            Name = "Category.Activate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000016"),
-                            Description = "Hard-delete categories",
-                            Name = "Category.Delete"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000017"),
-                            Description = "Create warehouses",
-                            Name = "Warehouse.Create"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000018"),
-                            Description = "Edit warehouses (warehouse-scoped)",
-                            Name = "Warehouse.Edit"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000019"),
-                            Description = "View warehouses",
-                            Name = "Warehouse.View"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000020"),
-                            Description = "Deactivate warehouses (warehouse-scoped)",
-                            Name = "Warehouse.Deactivate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000021"),
-                            Description = "Activate warehouses (warehouse-scoped)",
-                            Name = "Warehouse.Activate"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000022"),
-                            Description = "View inventory and stock movement (transactions)",
-                            Name = "Inventory.View"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000023"),
-                            Description = "Adjust stock counts (warehouse-scoped)",
-                            Name = "Inventory.Adjust"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000024"),
-                            Description = "Create orders",
-                            Name = "Order.Create"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000025"),
-                            Description = "Edit orders",
-                            Name = "Order.Edit"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000026"),
-                            Description = "Cancel orders",
-                            Name = "Order.Cancel"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000027"),
-                            Description = "Complete (fulfill) orders (warehouse-scoped)",
-                            Name = "Order.Complete"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000028"),
-                            Description = "View all orders",
-                            Name = "Order.View"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000029"),
-                            Description = "View own orders only",
-                            Name = "Order.ViewOwn"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000030"),
-                            Description = "Add line items to orders",
-                            Name = "OrderItem.Add"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000031"),
-                            Description = "Remove line items from orders",
-                            Name = "OrderItem.Remove"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000032"),
-                            Description = "View order reports",
-                            Name = "Report.ViewOrders"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000033"),
-                            Description = "View inventory reports",
-                            Name = "Report.ViewInventory"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000034"),
-                            Description = "View transaction reports",
-                            Name = "Report.ViewTransactions"
-                        },
-                        new
-                        {
-                            Id = new Guid("60000000-0000-0000-0000-000000000035"),
-                            Description = "View warehouse summary reports",
-                            Name = "Report.ViewWarehouseSummary"
-                        });
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1129,91 +896,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Resource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Type", "Name")
-                        .IsUnique();
-
-                    b.ToTable("Resources");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("70000000-0000-0000-0000-000000000001"),
-                            Name = "Main Warehouse",
-                            Type = "Warehouse"
-                        },
-                        new
-                        {
-                            Id = new Guid("70000000-0000-0000-0000-000000000002"),
-                            Name = "Alexandria Warehouse",
-                            Type = "Warehouse"
-                        },
-                        new
-                        {
-                            Id = new Guid("70000000-0000-0000-0000-000000000003"),
-                            Name = "Cairo Warehouse",
-                            Type = "Warehouse"
-                        });
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("50000000-0000-0000-0000-000000000001"),
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("50000000-0000-0000-0000-000000000002"),
-                            Name = "Manager"
-                        },
-                        new
-                        {
-                            Id = new Guid("50000000-0000-0000-0000-000000000003"),
-                            Name = "WarehouseOperator"
-                        },
-                        new
-                        {
-                            Id = new Guid("50000000-0000-0000-0000-000000000004"),
-                            Name = "SalesAgent"
-                        });
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1240,8 +922,10 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -1252,8 +936,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("RoleId");
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -1269,7 +951,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "admin@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.MBzYxHzXa5ldDEWJ/l9oQg==.MP5l6mZmU1DpWNWDFJJoughwJ83sLGWVEN1DC+t9I5M=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            Role = "Admin",
                             Username = "admin"
                         },
                         new
@@ -1280,7 +962,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "admin2@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.6u4ePiGDvOinOE45tjhHsA==.f4z3B7MINBuJu9tcM17xDV9J5rwCyUtaAcv93OBJtAA=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            Role = "Admin",
                             Username = "admin2"
                         },
                         new
@@ -1291,7 +973,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "ahmed@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.Bs0wWo3rhMJ4dh2IGmp8BQ==.coVOKfh2h6uNEcjuP1uqkSxBlfZ1HV5/nSa03XCJhcM=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            Role = "WarehouseOperator",
                             Username = "ahmed"
                         },
                         new
@@ -1302,7 +984,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "sara@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.IUNFcOuRzyrW2TR497uubA==.6gQmot5WpeY3qPVa+71QKNJsAf8IUhWpOGn5Ri7YHiY=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            Role = "WarehouseOperator",
                             Username = "sara"
                         },
                         new
@@ -1313,7 +995,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "mohamed@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.j3jvp6L3MnN649wsRRMT6A==.X+FdMk0qGX1xq4tGgg3PcoQGeW3ddONzDvFCG0vC0o0=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            Role = "WarehouseOperator",
                             Username = "mohamed"
                         },
                         new
@@ -1324,7 +1006,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "manager@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.k19uFWjMCAzN+mGFdto86w==.z7SieNjkQ+HoYMlIfG815EZr7r54bCc/jF8FHWHc5Do=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            Role = "Manager",
                             Username = "manager"
                         },
                         new
@@ -1335,248 +1017,8 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Email = "sales1@inventory.local",
                             IsActive = true,
                             PasswordHash = "100000.dxsBi574BJhxiOFR6stu7Q==.zY8XemzTza1R4uCnyBq2v+con1+G6srKZcCsxJfEiFg=",
-                            RoleId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            Role = "SalesAgent",
                             Username = "sales1"
-                        });
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.UserPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ResourceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserId", "PermissionId")
-                        .IsUnique()
-                        .HasFilter("[ResourceId] IS NULL");
-
-                    b.HasIndex("UserId", "PermissionId", "ResourceId")
-                        .IsUnique()
-                        .HasFilter("[ResourceId] IS NOT NULL");
-
-                    b.ToTable("UserPermissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000000"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000008"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000001"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000019"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000002"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000022"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000003"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000023"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000004"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000028"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000005"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000027"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000006"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000008"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000007"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000019"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000008"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000022"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000009"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000023"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000010"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000028"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000011"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000027"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000012"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000008"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000013"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000019"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000014"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000022"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000015"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000023"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000016"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000028"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000017"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000027"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000018"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000013"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000019"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000008"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000020"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000019"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000021"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000022"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000022"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000028"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000023"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000032"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000024"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000033"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000025"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000034"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000026"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000035"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000027"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000008"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000028"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000024"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000029"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000025"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000030"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000026"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000031"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000029"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000032"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000030"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000033"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000031"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
                         });
                 });
 
@@ -1601,12 +1043,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<Guid?>("ResourceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ResourceId");
 
                     b.ToTable("Warehouses");
 
@@ -1617,8 +1054,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             Location = "Downtown, Cairo",
-                            Name = "Main Warehouse",
-                            ResourceId = new Guid("70000000-0000-0000-0000-000000000001")
+                            Name = "Main Warehouse"
                         },
                         new
                         {
@@ -1626,8 +1062,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             Location = "Alexandria",
-                            Name = "Alexandria Warehouse",
-                            ResourceId = new Guid("70000000-0000-0000-0000-000000000002")
+                            Name = "Alexandria Warehouse"
                         },
                         new
                         {
@@ -1635,8 +1070,7 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             Location = "Nasr City, Cairo",
-                            Name = "Cairo Warehouse",
-                            ResourceId = new Guid("70000000-0000-0000-0000-000000000003")
+                            Name = "Cairo Warehouse"
                         });
                 });
 
@@ -1796,53 +1230,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.User", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.UserPermission", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Permission", "Permission")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Resource", "Resource")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.User", "User")
-                        .WithMany("Permissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Resource");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Warehouse", b =>
-                {
-                    b.HasOne("InventoryManagementSystem.Domain.Entities.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Resource");
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.WarehouseOperator", b =>
                 {
                     b.HasOne("InventoryManagementSystem.Domain.Entities.User", "Operator")
@@ -1879,29 +1266,9 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Permission", b =>
-                {
-                    b.Navigation("UserPermissions");
-                });
-
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Product", b =>
                 {
                     b.Navigation("Inventories");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Resource", b =>
-                {
-                    b.Navigation("UserPermissions");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.User", b =>
-                {
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("InventoryManagementSystem.Domain.Entities.Warehouse", b =>

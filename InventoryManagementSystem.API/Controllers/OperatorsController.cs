@@ -9,7 +9,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/warehouses/{warehouseId:guid}/operators")]
-[Authorize(Roles = "Admin")]
+[Authorize(Policy = "Warehouse.Edit")]
 public class OperatorsController : ControllerBase
 {
     private readonly IOperatorService _operatorService;
@@ -88,7 +88,7 @@ public class OperatorsController : ControllerBase
             assign.Operator.Username,
             assign.Operator.Email,
             assign.Operator.DisplayName,
-            assign.Operator.Role,
+            assign.Operator.Role?.Name ?? "Unknown",
             assign.Operator.IsActive,
             assign.Operator.CreatedAt));
 }

@@ -8,7 +8,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -16,6 +16,7 @@ public class ProductsController : ControllerBase
     public ProductsController(IProductService productService) => _productService = productService;
 
     [HttpGet]
+    [Authorize(Policy = "Product.View")]
     public async Task<IActionResult> GetAll()
     {
         var products = await _productService.GetAllAsync();
@@ -23,6 +24,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "Product.View")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -31,6 +33,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Product.Create")]
     public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
     {
         var product = new Product
@@ -54,6 +57,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "Product.Edit")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductRequest request)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -74,6 +78,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Policy = "Product.Deactivate")]
     public async Task<IActionResult> DeactivateProduct(Guid id)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -83,6 +88,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/activate")]
+    [Authorize(Policy = "Product.Activate")]
     public async Task<IActionResult> Activate(Guid id)
     {
         var product = await _productService.ActivateAsync(id);

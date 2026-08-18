@@ -14,5 +14,5 @@ public interface IInventoryService
     Task<IReadOnlyList<Inventory>> GetByWarehouseAsync(Guid warehouseId);
     Task<bool> ExistsAsync(Guid productId, Guid warehouseId);
     Task<(bool Success, string? Error)> CreateAsync(CreateInventoryRequest request, Guid createdByUserId);
-    Task<(bool Success, string? Error)> AdjustAsync(AdjustStockRequest request, Guid changedByUserId);
+    Task<(bool Success, string? Error, bool Forbidden)> AdjustAsync(AdjustStockRequest request, Guid changedByUserId);
 }

@@ -13,5 +13,5 @@ public interface IOrderService
     Task<(bool Success, Order? Order, string? Error)> CreateAsync(CreateOrderRequest request, Guid createdByUserId);
     Task<(bool Success, string? Error, bool Forbidden)> UpdateAsync(Guid orderId, UpdateOrderRequest request, Guid userId);
     Task<(bool Success, string? Error, bool Forbidden)> CancelAsync(Guid orderId, Guid userId);
-    Task<(bool Success, string? Error, bool Forbidden)> FulfillAsync(Guid orderId, Guid warehouseId, Guid operatorUserId);
+    Task<(bool Success, string? Error, bool Forbidden)> FulfillAsync(Guid orderId, FulfillOrderRequest request, Guid operatorUserId);
 }

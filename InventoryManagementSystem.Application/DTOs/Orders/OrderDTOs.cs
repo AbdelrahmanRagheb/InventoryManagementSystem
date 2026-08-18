@@ -17,9 +17,13 @@ public record UpdateOrderRequest(
     [param: EmailAddress, StringLength(150)] string? CustomerEmail = null,
     List<OrderItemRequest>? Items = null);
 
-public record FulfillOrderRequest([param: Required] Guid WarehouseId);
+public record FulfillItemRequest(
+    [param: Required] Guid OrderItemId,
+    [param: Required] Guid WarehouseId);
 
-public record OrderItemResponse(Guid Id, Guid ProductId, string ProductName, int Quantity, decimal UnitPrice);
+public record FulfillOrderRequest([param: Required] List<FulfillItemRequest> Items);
+
+public record OrderItemResponse(Guid Id, Guid ProductId, string ProductName, int Quantity, decimal UnitPrice, Guid? WarehouseId);
 
 public record OrderHistoryResponse(Guid Id, OrderStatus Status, Guid ChangedByUserId, DateTime ChangedAt);
 

@@ -14,14 +14,16 @@ namespace InventoryManagementSystem.API.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
+    private readonly IAccessService _accessService;
 
-    public OrdersController(IOrderService orderService)
+    public OrdersController(IOrderService orderService, IAccessService accessService)
     {
         _orderService = orderService;
+        _accessService = accessService;
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Policy = "Order.View")]
     public async Task<IActionResult> GetAll()
     {
         var orders = await _orderService.GetAllAsync();
@@ -29,7 +31,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("mine")]
-    [Authorize(Roles = "SalesAgent")]
+    [Authorize(Policy = "Order.ViewOwn")]
     public async Task<IActionResult> GetMine()
     {
         var orders = await _orderService.GetByUserAsync(CurrentUserId());
@@ -43,14 +45,18 @@ public class OrdersController : ControllerBase
         if (order == null)
             return NotFound(new { message = $"Order with id: {id} does not exist" });
 
-        if (User.IsInRole("SalesAgent") && order.CreatedByUserId != CurrentUserId())
-            return Forbid();
+        if (await _accessService.HasPermissionAsync(CurrentUserId(), "Order.View"))
+            return Ok(ToResponse(order));
 
-        return Ok(ToResponse(order));
+        if (order.CreatedByUserId == CurrentUserId() &&
+            await _accessService.HasPermissionAsync(CurrentUserId(), "Order.ViewOwn"))
+            return Ok(ToResponse(order));
+
+        return Forbid();
     }
 
     [HttpPost]
-    [Authorize(Roles = "SalesAgent")]
+    [Authorize(Policy = "Order.Create")]
     public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
     {
         var (success, created, error) = await _orderService.CreateAsync(request, CurrentUserId());
@@ -62,7 +68,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "SalesAgent")]
+    [Authorize(Policy = "Order.Edit")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrderRequest request)
     {
         var (success, error, forbidden) = await _orderService.UpdateAsync(id, request, CurrentUserId());
@@ -76,7 +82,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id:guid}/cancel")]
-    [Authorize(Roles = "SalesAgent")]
+    [Authorize(Policy = "Order.Cancel")]
     public async Task<IActionResult> Cancel(Guid id)
     {
         var (success, error, forbidden) = await _orderService.CancelAsync(id, CurrentUserId());
@@ -90,10 +96,10 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("{id:guid}/fulfill")]
-    [Authorize(Roles = "WarehouseOperator")]
+    [Authorize]
     public async Task<IActionResult> Fulfill(Guid id, [FromBody] FulfillOrderRequest request)
     {
-        var (success, error, forbidden) = await _orderService.FulfillAsync(id, request.WarehouseId, CurrentUserId());
+        var (success, error, forbidden) = await _orderService.FulfillAsync(id, request, CurrentUserId());
         if (forbidden)
             return Forbid();
         if (!success)
@@ -120,6 +126,6 @@ public class OrdersController : ControllerBase
             order.CompletedAt,
             order.CancelledAt,
             order.Items.Sum(i => i.Quantity * i.UnitPrice),
-            order.Items.Select(i => new OrderItemResponse(i.Id, i.ProductId, i.Product.Name, i.Quantity, i.UnitPrice)).ToList(),
+            order.Items.Select(i => new OrderItemResponse(i.Id, i.ProductId, i.Product.Name, i.Quantity, i.UnitPrice, i.WarehouseId)).ToList(),
             order.History.Select(h => new OrderHistoryResponse(h.Id, h.Status, h.ChangedByUserId, h.ChangedAt)).ToList());
 }

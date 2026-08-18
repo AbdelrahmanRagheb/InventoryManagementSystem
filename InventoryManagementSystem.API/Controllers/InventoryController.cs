@@ -16,7 +16,7 @@ public class InventoryController : ControllerBase
     public InventoryController(IInventoryService inventoryService) => _inventoryService = inventoryService;
 
     [HttpGet]
-    [Authorize]
+    [Authorize(Policy = "Inventory.View")]
     public async Task<IActionResult> GetAll()
     {
         var inventories = await _inventoryService.GetAllAsync();
@@ -24,7 +24,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize]
+    [Authorize(Policy = "Inventory.View")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var inventory = await _inventoryService.GetByIdAsync(id);
@@ -33,7 +33,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("~/api/products/{productId:guid}/inventory")]
-    [Authorize]
+    [Authorize(Policy = "Inventory.View")]
     public async Task<IActionResult> GetByProduct(Guid productId)
     {
         var inventories = await _inventoryService.GetByProductAsync(productId);
@@ -41,7 +41,7 @@ public class InventoryController : ControllerBase
     }
 
     [HttpGet("~/api/warehouses/{warehouseId:guid}/inventory")]
-    [Authorize]
+    [Authorize(Policy = "Inventory.View")]
     public async Task<IActionResult> GetByWarehouse(Guid warehouseId)
     {
         var inventories = await _inventoryService.GetByWarehouseAsync(warehouseId);
@@ -50,14 +50,15 @@ public class InventoryController : ControllerBase
 
     [HttpPost]
     [Route("adjust")]
-    [Authorize(Roles = "Admin,WarehouseOperator")]
+    [Authorize]
     public async Task<IActionResult> Adjust([FromBody] AdjustStockRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userId, out var changedByUserId))
             return Unauthorized();
 
-        var (success, error) = await _inventoryService.AdjustAsync(request, changedByUserId);
+        var (success, error, forbidden) = await _inventoryService.AdjustAsync(request, changedByUserId);
+        if (forbidden) return Forbid();
         if (!success) return BadRequest(new { error });
         return Ok();
     }

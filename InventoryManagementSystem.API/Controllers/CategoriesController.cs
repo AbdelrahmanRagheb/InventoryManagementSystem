@@ -8,7 +8,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -16,6 +16,7 @@ public class CategoriesController : ControllerBase
     public CategoriesController(ICategoryService categoryService) => _categoryService = categoryService;
 
     [HttpGet]
+    [Authorize(Policy = "Category.View")]
     public async Task<IActionResult> GetAll()
     {
         var categories = await _categoryService.GetAllAsync();
@@ -23,6 +24,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "Category.View")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var category = await _categoryService.GetByIdAsync(id);
@@ -31,6 +33,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Category.Create")]
     public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request)
     {
         var category = new Category
@@ -46,6 +49,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "Category.Edit")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryRequest request)
     {
         var category = await _categoryService.GetByIdAsync(id);
@@ -57,6 +61,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Policy = "Category.Deactivate")]
     public async Task<IActionResult> DeactivateCategory(Guid id)
     {
         var category = await _categoryService.GetByIdAsync(id);
@@ -66,6 +71,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/activate")]
+    [Authorize(Policy = "Category.Activate")]
     public async Task<IActionResult> Activate(Guid id)
     {
         var category = await _categoryService.ActivateAsync(id);
@@ -74,6 +80,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "Category.Delete")]
     public async Task<IActionResult> HardDelete(Guid id)
     {
         var deleted = await _categoryService.HardDeleteAsync(id);

@@ -20,7 +20,7 @@ public class AuthService : IAuthService
         var user = await _userRepo.GetByUsernameAsync(username);
         if (user == null) return (false, null, "Invalid username or password");
         if (!_hasher.Verify(password, user.PasswordHash)) return (false, null, "Invalid username or password");
-        var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username, user.Role);
+        var token = _tokenService.GenerateToken(user.Id.ToString(), user.Username, user.Role.Name);
         return (true, token, null);
     }
 }

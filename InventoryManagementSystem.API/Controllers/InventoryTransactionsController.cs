@@ -8,7 +8,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/inventory/transactions")]
-[Authorize(Roles = "Admin,Manager,WarehouseOperator")]
+[Authorize(Policy = "Inventory.View")]
 public class InventoryTransactionsController : ControllerBase
 {
     private readonly IInventoryTransactionService _transactionService;

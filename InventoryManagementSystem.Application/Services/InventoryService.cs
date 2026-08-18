@@ -1,3 +1,4 @@
+using InventoryManagementSystem.Application.Authorization;
 using InventoryManagementSystem.Application.DTOs.Inventory;
 using InventoryManagementSystem.Application.DTOs.Users;
 using InventoryManagementSystem.Domain.Enums;
@@ -12,13 +13,13 @@ public class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _invRepo;
     private readonly IInventoryTransactionRepository _txnRepo;
-    private readonly IWarehouseOperatorRepository _opRepo;
+    private readonly IAccessService _accessService;
 
-    public InventoryService(IInventoryRepository invRepo, IInventoryTransactionRepository txnRepo, IWarehouseOperatorRepository opRepo)
+    public InventoryService(IInventoryRepository invRepo, IInventoryTransactionRepository txnRepo, IAccessService accessService)
     {
         _invRepo = invRepo;
         _txnRepo = txnRepo;
-        _opRepo = opRepo;
+        _accessService = accessService;
     }
 
     public async Task<Inventory?> GetByIdAsync(Guid id) => await _invRepo.GetByIdAsync(id);
@@ -29,12 +30,6 @@ public class InventoryService : IInventoryService
     public async Task<IReadOnlyList<Inventory>> GetByWarehouseAsync(Guid warehouseId) => await _invRepo.GetByWarehouseAsync(warehouseId);
 
     public async Task<bool> ExistsAsync(Guid productId, Guid warehouseId) => await _invRepo.GetByProductWarehouseAsync(productId, warehouseId) != null;
-
-    private async Task<(bool IsOperator, Guid OwnedWarehouseId)> CheckOperatorWarehouse(Guid userId)
-    {
-        var op = await _opRepo.GetByOperatorAsync(userId);
-        return op.Count > 0 ? (true, op[0].WarehouseId) : (false, Guid.Empty);
-    }
 
     public async Task<(bool Success, string? Error)> CreateAsync(CreateInventoryRequest request, Guid createdByUserId)
     {
@@ -69,27 +64,26 @@ public class InventoryService : IInventoryService
         return (true, null);
     }
 
-    public async Task<(bool Success, string? Error)> AdjustAsync(AdjustStockRequest request, Guid changedByUserId)
+    public async Task<(bool Success, string? Error, bool Forbidden)> AdjustAsync(AdjustStockRequest request, Guid changedByUserId)
     {
-        var inventory = await _invRepo.GetByProductWarehouseAsync(request.ProductId, request.WarehouseId);
-        if (inventory == null) return (false, "Inventory record not found");
+        if (!await _accessService.CanAsync(changedByUserId, PermissionCatalog.InventoryAdjust, request.WarehouseId))
+            return (false, "You are not allowed to adjust stock in this warehouse", true);
 
-        if (request.QuantityChange <= 0) return (false, "Quantity change must be positive");
+        var inventory = await _invRepo.GetByProductWarehouseAsync(request.ProductId, request.WarehouseId);
+        if (inventory == null) return (false, "Inventory record not found", false);
+
+        if (request.QuantityChange <= 0) return (false, "Quantity change must be positive", false);
 
         if (request.Type != TransactionType.Increase && request.Type != TransactionType.Decrease)
-            return (false, "Transaction type must be Increase or Decrease");
+            return (false, "Transaction type must be Increase or Decrease", false);
 
-        if (string.IsNullOrWhiteSpace(request.Reason)) return (false, "Reason is required");
-
-        var (isOperator, ownedWh) = await CheckOperatorWarehouse(changedByUserId);
-        if (isOperator && inventory.WarehouseId != ownedWh)
-            return (false, "Warehouse operator can only adjust their assigned warehouse");
+        if (string.IsNullOrWhiteSpace(request.Reason)) return (false, "Reason is required", false);
 
         var newQuantity = request.Type == TransactionType.Increase
             ? inventory.Quantity + request.QuantityChange
             : inventory.Quantity - request.QuantityChange;
 
-        if (newQuantity < 0) return (false, "Decrease would result in negative stock");
+        if (newQuantity < 0) return (false, "Decrease would result in negative stock", false);
 
         var previousQuantity = inventory.Quantity;
         inventory.Quantity = newQuantity;
@@ -111,7 +105,7 @@ public class InventoryService : IInventoryService
         };
 
         await _txnRepo.AddAsync(transaction);
-        return (true, null);
+        return (true, null, false);
     }
 
     }

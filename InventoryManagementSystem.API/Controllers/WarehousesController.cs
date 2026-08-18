@@ -8,7 +8,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class WarehousesController : ControllerBase
 {
     private readonly IWarehouseService _warehouseService;
@@ -16,6 +16,7 @@ public class WarehousesController : ControllerBase
     public WarehousesController(IWarehouseService warehouseService) => _warehouseService = warehouseService;
 
     [HttpGet]
+    [Authorize(Policy = "Warehouse.View")]
     public async Task<IActionResult> GetAll()
     {
         var warehouses = await _warehouseService.GetAllAsync();
@@ -23,6 +24,7 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = "Warehouse.View")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var warehouse = await _warehouseService.GetByIdAsync(id);
@@ -31,6 +33,7 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Warehouse.Create")]
     public async Task<IActionResult> Create([FromBody] CreateWarehouseRequest request)
     {
         var warehouse = new Warehouse
@@ -46,6 +49,7 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = "Warehouse.Edit")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWarehouseRequest request)
     {
         var warehouse = await _warehouseService.GetByIdAsync(id);
@@ -57,6 +61,7 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/deactivate")]
+    [Authorize(Policy = "Warehouse.Deactivate")]
     public async Task<IActionResult> DeactivateWarehouse(Guid id)
     {
         var warehouse = await _warehouseService.GetByIdAsync(id);
@@ -66,6 +71,7 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpPost("{id:guid}/activate")]
+    [Authorize(Policy = "Warehouse.Activate")]
     public async Task<IActionResult> Activate(Guid id)
     {
         var warehouse = await _warehouseService.ActivateAsync(id);
