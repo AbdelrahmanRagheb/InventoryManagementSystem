@@ -4,6 +4,7 @@ using InventoryManagementSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260818012236_AddOperatorViewPermission")]
+    partial class AddOperatorViewPermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1589,12 +1592,6 @@ namespace InventoryManagementSystem.Infrastructure.Migrations
                             Id = new Guid("80000000-0000-0000-0000-000000000034"),
                             PermissionId = new Guid("60000000-0000-0000-0000-000000000036"),
                             UserId = new Guid("40000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("80000000-0000-0000-0000-000000000035"),
-                            PermissionId = new Guid("60000000-0000-0000-0000-000000000028"),
-                            UserId = new Guid("40000000-0000-0000-0000-000000000007")
                         });
                 });
 

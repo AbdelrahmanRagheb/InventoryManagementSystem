@@ -1,3 +1,4 @@
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.Repositories;
 using InventoryManagementSystem.Domain.Entities;
 using System;
@@ -14,6 +15,23 @@ public class ProductService : BaseService<Product>, IProductService
     {
         _productRepo = productRepo;
         _categoryRepo = categoryRepo;
+    }
+
+    public async Task<PagedResponse<Product>> GetPagedAsync(int page, int pageSize)
+    {
+        var (p, ps) = Paging.Normalize(page, pageSize);
+        var (items, total) = await _productRepo.GetPagedAsync(p, ps);
+        return new PagedResponse<Product>(items, p, ps, total);
+    }
+
+    public override async Task AddAsync(Product product)
+    {
+        if (product.CategoryId is Guid categoryId && categoryId != Guid.Empty)
+        {
+            var cat = await _categoryRepo.GetByIdAsync(categoryId);
+            if (cat == null || !cat.IsActive) throw new InvalidOperationException("Invalid or inactive category");
+        }
+        await base.AddAsync(product);
     }
 
     public async Task UpdateAsync(Product product)

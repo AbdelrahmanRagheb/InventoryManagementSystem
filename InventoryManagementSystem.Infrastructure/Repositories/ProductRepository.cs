@@ -22,4 +22,7 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
 
     public async Task<IReadOnlyList<Product>> GetByIdsAsync(IEnumerable<Guid> ids) =>
         await _context.Set<Product>().Where(p => ids.Contains(p.Id)).ToListAsync();
+
+    public async Task<IReadOnlyList<Product>> GetByCategoryAsync(Guid categoryId) =>
+        await _context.Set<Product>().Where(p => p.CategoryId == categoryId).ToListAsync();
 }

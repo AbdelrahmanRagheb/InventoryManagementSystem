@@ -9,7 +9,7 @@ namespace InventoryManagementSystem.API.Controllers;
 
 [ApiController]
 [Route("api/warehouses/{warehouseId:guid}/operators")]
-[Authorize(Policy = "Warehouse.Edit")]
+[Authorize]
 public class OperatorsController : ControllerBase
 {
     private readonly IOperatorService _operatorService;
@@ -17,6 +17,7 @@ public class OperatorsController : ControllerBase
     public OperatorsController(IOperatorService operatorService) => _operatorService = operatorService;
 
     [HttpGet("/api/operators")]
+    [Authorize(Policy = "Operator.View")]
     public async Task<IActionResult> GetAll()
     {
         var operators = await _operatorService.GetAllAsync();
@@ -24,6 +25,7 @@ public class OperatorsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Policy = "Operator.View")]
     public async Task<IActionResult> GetByWarehouse(Guid warehouseId)
     {
         var operators = await _operatorService.GetByWarehouseAsync(warehouseId);
@@ -31,6 +33,7 @@ public class OperatorsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Warehouse.Edit")]
     public async Task<IActionResult> Assign(Guid warehouseId, [FromBody] AssignOperatorRequest request)
     {
         var assign = new WarehouseOperator
@@ -52,6 +55,7 @@ public class OperatorsController : ControllerBase
     }
 
     [HttpPut("{userId:guid}")]
+    [Authorize(Policy = "Warehouse.Edit")]
     public async Task<IActionResult> Update(Guid warehouseId, Guid userId, [FromBody] UpdateOperatorRequest request)
     {
         var current = await _operatorService.GetByWarehouseAndUserAsync(warehouseId, userId);
@@ -76,6 +80,7 @@ public class OperatorsController : ControllerBase
     }
 
     [HttpDelete("{userId:guid}")]
+    [Authorize(Policy = "Warehouse.Edit")]
     public async Task<IActionResult> Remove(Guid warehouseId, Guid userId)
     {
         await _operatorService.RemoveAsync(warehouseId, userId);

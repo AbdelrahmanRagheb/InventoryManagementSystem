@@ -57,6 +57,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherAdapter>();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
@@ -70,7 +71,9 @@ builder.Services.AddScoped<IInventoryTransactionService, InventoryTransactionSer
 builder.Services.AddScoped<IOperatorService, OperatorService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAccessService, AccessService>();
+builder.Services.AddScoped<IAccessManagementService, AccessManagementService>();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new InventoryManagementSystem.API.Json.HumanReadableDateConverter()));

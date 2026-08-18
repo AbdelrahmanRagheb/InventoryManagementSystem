@@ -23,6 +23,28 @@ public class InventoryRepository : BaseRepository<Inventory>, IInventoryReposito
     public async Task<IReadOnlyList<Inventory>> GetByWarehouseAsync(Guid warehouseId) =>
         await _context.Set<Inventory>().Where(i => i.WarehouseId == warehouseId).ToListAsync();
 
+    public async Task<(IReadOnlyList<Inventory> Items, int Total)> GetPagedAsync(int page, int pageSize, IReadOnlyList<Guid>? warehouseIds)
+    {
+        var query = _context.Set<Inventory>().AsQueryable();
+        if (warehouseIds != null)
+            query = query.Where(i => warehouseIds.Contains(i.WarehouseId));
+        return await ApplyPagingAsync(query, page, pageSize);
+    }
+
+    public async Task<(IReadOnlyList<Inventory> Items, int Total)> GetByProductPagedAsync(Guid productId, int page, int pageSize, IReadOnlyList<Guid>? warehouseIds)
+    {
+        var query = _context.Set<Inventory>().Where(i => i.ProductId == productId).AsQueryable();
+        if (warehouseIds != null)
+            query = query.Where(i => warehouseIds.Contains(i.WarehouseId));
+        return await ApplyPagingAsync(query, page, pageSize);
+    }
+
+    public async Task<(IReadOnlyList<Inventory> Items, int Total)> GetByWarehousePagedAsync(Guid warehouseId, int page, int pageSize)
+    {
+        var query = _context.Set<Inventory>().Where(i => i.WarehouseId == warehouseId);
+        return await ApplyPagingAsync(query, page, pageSize);
+    }
+
     public async Task UpdateAsync(Inventory entity)
     {
         _context.Set<Inventory>().Update(entity);

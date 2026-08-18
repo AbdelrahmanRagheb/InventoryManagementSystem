@@ -25,6 +25,7 @@ public static class RoleDefaults
                 PermissionCatalog.OrderCreate,
                 PermissionCatalog.OrderEdit,
                 PermissionCatalog.OrderCancel,
+                PermissionCatalog.OrderView,
                 PermissionCatalog.OrderViewOwn,
                 PermissionCatalog.OrderItemAdd,
                 PermissionCatalog.OrderItemRemove
@@ -45,6 +46,7 @@ public static class RoleDefaults
                 PermissionCatalog.WarehouseView,
                 PermissionCatalog.InventoryView,
                 PermissionCatalog.OrderView,
+                PermissionCatalog.OperatorView,
                 PermissionCatalog.ReportViewOrders,
                 PermissionCatalog.ReportViewInventory,
                 PermissionCatalog.ReportViewTransactions,

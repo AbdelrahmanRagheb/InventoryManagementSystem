@@ -1,4 +1,5 @@
 using InventoryManagementSystem.Application.Authorization;
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.DTOs.Orders;
 using InventoryManagementSystem.Application.Repositories;
 using InventoryManagementSystem.Domain.Entities;
@@ -16,6 +17,7 @@ public class OrderService : IOrderService
     private readonly IProductRepository _productRepo;
     private readonly IInventoryRepository _inventoryRepo;
     private readonly IInventoryTransactionRepository _transactionRepo;
+    private readonly IWarehouseRepository _warehouseRepo;
     private readonly IAccessService _accessService;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -24,6 +26,7 @@ public class OrderService : IOrderService
         IProductRepository productRepo,
         IInventoryRepository inventoryRepo,
         IInventoryTransactionRepository transactionRepo,
+        IWarehouseRepository warehouseRepo,
         IAccessService accessService,
         IUnitOfWork unitOfWork)
     {
@@ -31,18 +34,40 @@ public class OrderService : IOrderService
         _productRepo = productRepo;
         _inventoryRepo = inventoryRepo;
         _transactionRepo = transactionRepo;
+        _warehouseRepo = warehouseRepo;
         _accessService = accessService;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IReadOnlyList<Order>> GetAllAsync() =>
-        await _orderRepo.GetAllWithItemsAsync();
+    public async Task<PagedResponse<Order>> GetAllPagedAsync(int page, int pageSize, Guid userId)
+    {
+        var (p, ps) = Paging.Normalize(page, pageSize);
+        IReadOnlyList<Guid>? assigned = null;
+        if (await _accessService.IsRestrictedToAssignedWarehousesAsync(userId))
+            assigned = await _accessService.GetAssignedWarehouseIdsAsync(userId);
+        var (items, total) = await _orderRepo.GetPagedWithItemsAsync(p, ps, assigned);
+        return new PagedResponse<Order>(items, p, ps, total);
+    }
 
-    public async Task<IReadOnlyList<Order>> GetByUserAsync(Guid userId) =>
-        await _orderRepo.GetByUserAsync(userId);
+    public async Task<PagedResponse<Order>> GetByUserPagedAsync(int page, int pageSize, Guid userId)
+    {
+        var (p, ps) = Paging.Normalize(page, pageSize);
+        var (items, total) = await _orderRepo.GetByUserPagedAsync(userId, p, ps);
+        return new PagedResponse<Order>(items, p, ps, total);
+    }
 
-    public async Task<Order?> GetByIdWithItemsAsync(Guid id) =>
-        await _orderRepo.GetByIdWithItemsAsync(id);
+    public async Task<(Order? Order, bool Forbidden)> GetByIdWithItemsAsync(Guid id, Guid userId)
+    {
+        var order = await _orderRepo.GetByIdWithItemsAsync(id);
+        if (order == null) return (null, false);
+        if (await _accessService.IsRestrictedToAssignedWarehousesAsync(userId))
+        {
+            var assigned = await _accessService.GetAssignedWarehouseIdsAsync(userId);
+            if (!order.Items.Any(i => i.WarehouseId.HasValue && assigned.Contains(i.WarehouseId.Value)))
+                return (null, true);
+        }
+        return (order, false);
+    }
 
     public async Task<(bool Success, Order? Order, string? Error)> CreateAsync(CreateOrderRequest request, Guid createdByUserId)
     {
@@ -85,7 +110,9 @@ public class OrderService : IOrderService
         if (order == null)
             return (false, $"Order with id: {orderId} does not exist", false);
         var updateRole = await _accessService.GetRoleNameAsync(userId);
-        if (order.CreatedByUserId != userId && updateRole != RoleDefaults.Admin)
+        if (order.CreatedByUserId != userId &&
+            updateRole != RoleDefaults.Admin &&
+            updateRole != RoleDefaults.SalesAgent)
             return (false, null, true);
         if (order.Status != OrderStatus.Pending)
             return (false, "Only pending orders can be updated", false);
@@ -119,7 +146,9 @@ public class OrderService : IOrderService
         if (order == null)
             return (false, $"Order with id: {orderId} does not exist", false);
         var cancelRole = await _accessService.GetRoleNameAsync(userId);
-        if (order.CreatedByUserId != userId && cancelRole != RoleDefaults.Admin)
+        if (order.CreatedByUserId != userId &&
+            cancelRole != RoleDefaults.Admin &&
+            cancelRole != RoleDefaults.SalesAgent)
             return (false, null, true);
         if (order.Status != OrderStatus.Pending)
             return (false, "Only pending orders can be cancelled", false);
@@ -169,6 +198,9 @@ public class OrderService : IOrderService
         {
             if (!await _accessService.CanAsync(operatorUserId, PermissionCatalog.OrderComplete, warehouseId))
                 return (false, "You are only allowed to fulfill orders from warehouses you are assigned to complete", true);
+            var warehouse = await _warehouseRepo.GetByIdAsync(warehouseId);
+            if (warehouse == null || !warehouse.IsActive)
+                return (false, "Warehouse is deactivated", false);
         }
 
         await _unitOfWork.BeginTransactionAsync();

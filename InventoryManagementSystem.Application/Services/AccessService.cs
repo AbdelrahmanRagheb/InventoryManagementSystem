@@ -31,6 +31,18 @@ public class AccessService : IAccessService
         return user == null || !user.IsActive ? null : user.Role.Name;
     }
 
+    public async Task<bool> IsRestrictedToAssignedWarehousesAsync(Guid userId)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
+        return user != null && user.IsActive && user.Role.Name == RoleDefaults.WarehouseOperator;
+    }
+
+    public async Task<IReadOnlyList<Guid>> GetAssignedWarehouseIdsAsync(Guid userId)
+    {
+        var assignments = await _warehouseOperatorRepo.GetByOperatorAsync(userId);
+        return assignments.Select(a => a.WarehouseId).ToList();
+    }
+
     public async Task<bool> HasPermissionAsync(Guid userId, string permission)
     {
         var user = await _userRepo.GetByIdAsync(userId);

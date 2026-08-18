@@ -16,6 +16,16 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEnti
 
     public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync() => await _context.Set<TEntity>().ToListAsync();
 
+    public virtual async Task<(IReadOnlyList<TEntity> Items, int Total)> GetPagedAsync(int page, int pageSize) =>
+        await ApplyPagingAsync(_context.Set<TEntity>(), page, pageSize);
+
+    protected async Task<(IReadOnlyList<TEntity> Items, int Total)> ApplyPagingAsync(IQueryable<TEntity> query, int page, int pageSize)
+    {
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (items, total);
+    }
+
     public virtual async Task AddAsync(TEntity entity)
     {
         _context.Set<TEntity>().Add(entity);

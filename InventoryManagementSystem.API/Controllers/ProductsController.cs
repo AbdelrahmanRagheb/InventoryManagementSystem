@@ -1,3 +1,4 @@
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.DTOs.Products;
 using InventoryManagementSystem.Application.Services;
 using InventoryManagementSystem.Domain.Entities;
@@ -17,10 +18,14 @@ public class ProductsController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Product.View")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = Paging.DefaultPageSize)
     {
-        var products = await _productService.GetAllAsync();
-        return Ok(products.Select(ToResponse));
+        var products = await _productService.GetPagedAsync(page, pageSize);
+        return Ok(new PagedResponse<ProductResponse>(
+            products.Items.Select(ToResponse).ToList(),
+            products.Page,
+            products.PageSize,
+            products.TotalCount));
     }
 
     [HttpGet("{id:guid}")]

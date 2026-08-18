@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.DTOs.Orders;
 using InventoryManagementSystem.Application.Services;
 using InventoryManagementSystem.Domain.Entities;
@@ -24,32 +25,43 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Order.View")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = Paging.DefaultPageSize)
     {
-        var orders = await _orderService.GetAllAsync();
-        return Ok(orders.Select(ToResponse));
+        var orders = await _orderService.GetAllPagedAsync(page, pageSize, CurrentUserId());
+        return Ok(new PagedResponse<OrderResponse>(
+            orders.Items.Select(ToResponse).ToList(),
+            orders.Page,
+            orders.PageSize,
+            orders.TotalCount));
     }
 
     [HttpGet("mine")]
     [Authorize(Policy = "Order.ViewOwn")]
-    public async Task<IActionResult> GetMine()
+    public async Task<IActionResult> GetMine([FromQuery] int page = 1, [FromQuery] int pageSize = Paging.DefaultPageSize)
     {
-        var orders = await _orderService.GetByUserAsync(CurrentUserId());
-        return Ok(orders.Select(ToResponse));
+        var orders = await _orderService.GetByUserPagedAsync(page, pageSize, CurrentUserId());
+        return Ok(new PagedResponse<OrderResponse>(
+            orders.Items.Select(ToResponse).ToList(),
+            orders.Page,
+            orders.PageSize,
+            orders.TotalCount));
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var order = await _orderService.GetByIdWithItemsAsync(id);
+        var userId = CurrentUserId();
+        var (order, forbidden) = await _orderService.GetByIdWithItemsAsync(id, userId);
+        if (forbidden)
+            return Forbid();
         if (order == null)
             return NotFound(new { message = $"Order with id: {id} does not exist" });
 
-        if (await _accessService.HasPermissionAsync(CurrentUserId(), "Order.View"))
+        if (await _accessService.HasPermissionAsync(userId, "Order.View"))
             return Ok(ToResponse(order));
 
-        if (order.CreatedByUserId == CurrentUserId() &&
-            await _accessService.HasPermissionAsync(CurrentUserId(), "Order.ViewOwn"))
+        if (order.CreatedByUserId == userId &&
+            await _accessService.HasPermissionAsync(userId, "Order.ViewOwn"))
             return Ok(ToResponse(order));
 
         return Forbid();
@@ -63,7 +75,7 @@ public class OrdersController : ControllerBase
         if (!success)
             return BadRequest(new { error });
 
-        var order = await _orderService.GetByIdWithItemsAsync(created!.Id);
+        var (order, _) = await _orderService.GetByIdWithItemsAsync(created!.Id, CurrentUserId());
         return CreatedAtAction(nameof(GetById), new { id = order!.Id }, ToResponse(order));
     }
 
@@ -77,7 +89,7 @@ public class OrdersController : ControllerBase
         if (!success)
             return BadRequest(new { error });
 
-        var order = await _orderService.GetByIdWithItemsAsync(id);
+        var (order, _) = await _orderService.GetByIdWithItemsAsync(id, CurrentUserId());
         return Ok(ToResponse(order!));
     }
 
@@ -91,7 +103,7 @@ public class OrdersController : ControllerBase
         if (!success)
             return BadRequest(new { error });
 
-        var order = await _orderService.GetByIdWithItemsAsync(id);
+        var (order, _) = await _orderService.GetByIdWithItemsAsync(id, CurrentUserId());
         return Ok(ToResponse(order!));
     }
 
@@ -105,7 +117,7 @@ public class OrdersController : ControllerBase
         if (!success)
             return BadRequest(new { error });
 
-        var order = await _orderService.GetByIdWithItemsAsync(id);
+        var (order, _) = await _orderService.GetByIdWithItemsAsync(id, CurrentUserId());
         return Ok(ToResponse(order!));
     }
 

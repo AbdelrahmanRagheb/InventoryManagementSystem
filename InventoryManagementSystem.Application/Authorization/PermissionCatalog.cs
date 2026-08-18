@@ -12,6 +12,8 @@ public static class PermissionCatalog
     public const string UserAssignRole = "User.AssignRole";
     public const string UserManagePermissions = "User.ManagePermissions";
 
+    public const string OperatorView = "Operator.View";
+
     public const string ProductCreate = "Product.Create";
     public const string ProductEdit = "Product.Edit";
     public const string ProductView = "Product.View";
@@ -85,7 +87,8 @@ public static class PermissionCatalog
         [ReportViewOrders] = new("60000000-0000-0000-0000-000000000032"),
         [ReportViewInventory] = new("60000000-0000-0000-0000-000000000033"),
         [ReportViewTransactions] = new("60000000-0000-0000-0000-000000000034"),
-        [ReportViewWarehouseSummary] = new("60000000-0000-0000-0000-000000000035")
+        [ReportViewWarehouseSummary] = new("60000000-0000-0000-0000-000000000035"),
+        [OperatorView] = new("60000000-0000-0000-0000-000000000036")
     };
 
     public static readonly IReadOnlyDictionary<string, string> Descriptions = new Dictionary<string, string>
@@ -124,7 +127,8 @@ public static class PermissionCatalog
         [ReportViewOrders] = "View order reports",
         [ReportViewInventory] = "View inventory reports",
         [ReportViewTransactions] = "View transaction reports",
-        [ReportViewWarehouseSummary] = "View warehouse summary reports"
+        [ReportViewWarehouseSummary] = "View warehouse summary reports",
+        [OperatorView] = "View operator assignments"
     };
 
     public static readonly IReadOnlyList<string> All = Ids.Keys.ToList();

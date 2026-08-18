@@ -1,4 +1,5 @@
 using InventoryManagementSystem.Application.DTOs.Categories;
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.Services;
 using InventoryManagementSystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -17,10 +18,14 @@ public class CategoriesController : ControllerBase
 
     [HttpGet]
     [Authorize(Policy = "Category.View")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = Paging.DefaultPageSize)
     {
-        var categories = await _categoryService.GetAllAsync();
-        return Ok(categories.Select(ToResponse));
+        var categories = await _categoryService.GetPagedAsync(page, pageSize);
+        return Ok(new PagedResponse<CategoryResponse>(
+            categories.Items.Select(ToResponse).ToList(),
+            categories.Page,
+            categories.PageSize,
+            categories.TotalCount));
     }
 
     [HttpGet("{id:guid}")]

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using InventoryManagementSystem.Application.DTOs.Common;
 using InventoryManagementSystem.Application.DTOs.Warehouses;
 using InventoryManagementSystem.Application.Services;
 using InventoryManagementSystem.Domain.Entities;
@@ -12,21 +14,36 @@ namespace InventoryManagementSystem.API.Controllers;
 public class WarehousesController : ControllerBase
 {
     private readonly IWarehouseService _warehouseService;
+    private readonly IAccessService _accessService;
 
-    public WarehousesController(IWarehouseService warehouseService) => _warehouseService = warehouseService;
+    public WarehousesController(IWarehouseService warehouseService, IAccessService accessService)
+    {
+        _warehouseService = warehouseService;
+        _accessService = accessService;
+    }
 
     [HttpGet]
     [Authorize(Policy = "Warehouse.View")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = Paging.DefaultPageSize)
     {
-        var warehouses = await _warehouseService.GetAllAsync();
-        return Ok(warehouses.Select(ToResponse));
+        var warehouses = await _warehouseService.GetPagedVisibleAsync(page, pageSize, CurrentUserId());
+        return Ok(new PagedResponse<WarehouseResponse>(
+            warehouses.Items.Select(ToResponse).ToList(),
+            warehouses.Page,
+            warehouses.PageSize,
+            warehouses.TotalCount));
     }
 
     [HttpGet("{id:guid}")]
     [Authorize(Policy = "Warehouse.View")]
     public async Task<IActionResult> GetById(Guid id)
     {
+        var userId = CurrentUserId();
+        if (await _accessService.IsRestrictedToAssignedWarehousesAsync(userId))
+        {
+            var assigned = await _accessService.GetAssignedWarehouseIdsAsync(userId);
+            if (!assigned.Contains(id)) return Forbid();
+        }
         var warehouse = await _warehouseService.GetByIdAsync(id);
         if (warehouse == null) return NotFound();
         return Ok(ToResponse(warehouse));
@@ -77,6 +94,12 @@ public class WarehousesController : ControllerBase
         var warehouse = await _warehouseService.ActivateAsync(id);
         if (warehouse == null) return NotFound(new { message = $"Warehouse with id: {id} does not exist" });
         return Ok(ToResponse(warehouse));
+    }
+
+    private Guid CurrentUserId()
+    {
+        var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(value, out var id) ? id : Guid.Empty;
     }
 
     private static WarehouseResponse ToResponse(Warehouse warehouse) =>

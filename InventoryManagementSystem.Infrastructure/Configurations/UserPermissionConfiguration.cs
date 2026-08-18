@@ -62,7 +62,8 @@ public class UserPermissionConfiguration : IEntityTypeConfiguration<UserPermissi
             ["Report.ViewOrders"] = P("000000000032"),
             ["Report.ViewInventory"] = P("000000000033"),
             ["Report.ViewTransactions"] = P("000000000034"),
-            ["Report.ViewWarehouseSummary"] = P("000000000035")
+            ["Report.ViewWarehouseSummary"] = P("000000000035"),
+            ["Operator.View"] = P("000000000036")
         };
 
         var rows = new List<(string User, string[] PermissionNames)>
@@ -88,6 +89,22 @@ public class UserPermissionConfiguration : IEntityTypeConfiguration<UserPermissi
                 });
             }
         }
+
+        seed.Add(new UserPermission
+        {
+            Id = UP(seed.Count.ToString().PadLeft(12, '0')),
+            UserId = U("000000000006"),
+            PermissionId = permissions["Operator.View"],
+            ResourceId = null
+        });
+
+        seed.Add(new UserPermission
+        {
+            Id = UP(seed.Count.ToString().PadLeft(12, '0')),
+            UserId = U("000000000007"),
+            PermissionId = permissions["Order.View"],
+            ResourceId = null
+        });
         return seed;
     }
 }
